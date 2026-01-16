@@ -15,27 +15,31 @@ It is designed by enforcing three physical constraints to recover spatial consis
 ### Pipeline
 
 <center>
-<img src="assets/Pipeline.pdf" width="600"/>
+<img src="assets/Pipeline.png" width="600"/>
 </center>
+
 
 
 
 ### Short-term Height Stability
 <center>
-<img src="assets/SHS.pdf" width="600"/>
+<img src="assets/SHS.png" width="600"/>
 </center>
+
 
 ### Ground Contact Distance 
 
 <center>
-<img src="assets/GCD.pdf" width="400"/>
+<img src="assets/GCD.png" width="400"/>
 </center>
+
 
 ### Global Perspective Map
 
 <center>
-<img src="assets/GPM.pdf" width="600"/>
+<img src="assets/GPM.png" width="600"/>
 </center>
+
 
 ## News
 
