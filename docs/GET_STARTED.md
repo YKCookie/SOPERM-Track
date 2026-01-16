@@ -1,9 +1,9 @@
 # Get Started 
-We introduce the process of getting started on OC-SORT. This instruction is adapted from ByteTrack especially for the training part. We provide some simple pieces here, for details please refer to the source code and *utils/args.py*.
+We introduce the process of getting started on SOPERM-Track. This instruction is adapted from ByteTrack especially for the training part. We provide some simple pieces here, for details please refer to the source code and *utils/args.py*.
 
 ## Data preparation
 
-1. Download [MOT17](https://motchallenge.net/), [MOT20](https://motchallenge.net/), [CrowdHuman](https://www.crowdhuman.org/), [Cityperson](https://github.com/Zhongdao/Towards-Realtime-MOT/blob/master/DATASET_ZOO.md), [ETHZ](https://github.com/Zhongdao/Towards-Realtime-MOT/blob/master/DATASET_ZOO.md), [DanceTrack](https://github.com/DanceTrack/DanceTrack) and put them under <OCSORT_HOME>/datasets in the following structure:
+1. Download [MOT17](https://motchallenge.net/), [MOT20](https://motchallenge.net/), [CrowdHuman](https://www.crowdhuman.org/), [Cityperson](https://github.com/Zhongdao/Towards-Realtime-MOT/blob/master/DATASET_ZOO.md), [ETHZ](https://github.com/Zhongdao/Towards-Realtime-MOT/blob/master/DATASET_ZOO.md), [DanceTrack](https://github.com/DanceTrack/DanceTrack) and put them under <SOPERM-Track_HOME>/datasets in the following structure:
     ```
     datasets
     |——————mot
@@ -47,7 +47,7 @@ We introduce the process of getting started on OC-SORT. This instruction is adap
 ## Training
 You can use OC-SORT without training by adopting existing detectors. But we borrow the training guidelines from ByteTrack in case you want work on your own detector. 
 
-Download the COCO-pretrained YOLOX weight [here](https://github.com/Megvii-BaseDetection/YOLOX/tree/0.1.0) and put it under *\<OCSORT_HOME\>/pretrained*.
+Download the COCO-pretrained YOLOX weight [here](https://github.com/Megvii-BaseDetection/YOLOX/tree/0.1.0) and put it under *\<SOPERM-Track_HOME\>/pretrained*.
 
 * **Train ablation model (MOT17 half train and CrowdHuman)**
 
@@ -107,7 +107,7 @@ Download the COCO-pretrained YOLOX weight [here](https://github.com/Megvii-BaseD
     ```shell
     # MOT17
     python3 tools/run_ocsort.py -f exps/example/mot/yolox_x_mix_det.py -c pretrained/bytetrack_x_mot17.pth.tar -b 1 -d 1 --fp16 --fuse --expn $exp_name
-
+    
     # MOT20
     python3 tools/run_ocsort.py -f exps/example/mot/yolox_x_mix_mot20_ch.py -c pretrained/bytetrack_x_mot20.tar -b 1 -d 1 --fp16 --fuse --track_thresh 0.4 --mot20 --expn $exp_name
     ```
@@ -145,4 +145,4 @@ Furthermore, we provide a piece of attempt of using Gaussian Process Regression 
 ```shell
     python3 tools/gp_interpolation.py $raw_results_path $linear_interp_path $save_path
 ```
-*Note: for the results in our paper on MOT17/MOT20 private settings and HeadTrack, we use linear interpolation by default.*
+*Note: for the results in our paper on MOT17/MOT20 private settings and DanceTrack, we use linear interpolation by default.*
