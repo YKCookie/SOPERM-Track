@@ -15,7 +15,7 @@ It is designed by enforcing three physical constraints to recover spatial consis
 ### Pipeline
 
 <center>
-<img src="assets/Pipeline.png" width="600"/>
+<img src="assets/Pipeline.png" width="800"/>
 </center>
 
 
@@ -23,7 +23,7 @@ It is designed by enforcing three physical constraints to recover spatial consis
 
 ### Short-term Height Stability
 <center>
-<img src="assets/SHS.png" width="600"/>
+<img src="assets/SHS.png" width="800"/>
 </center>
 
 
@@ -37,7 +37,7 @@ It is designed by enforcing three physical constraints to recover spatial consis
 ### Global Perspective Map
 
 <center>
-<img src="assets/GPM.png" width="600"/>
+<img src="assets/GPM.png" width="800"/>
 </center>
 
 
@@ -81,7 +81,7 @@ python3 tools/demo_track.py --demo_type video -f exps/example/mot/yolox_dancetra
 
 
 ## Acknowledgement and Citation
-The codebase is built highly upon OC-SORT and  [ByteTrack](https://github.com/ifzhang/ByteTrack). We thank their wondeful works. OC-SORT, filterpy and ByteTrack are available under MIT License. And [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) uses Apache License 2.0 License.
+The codebase is built highly upon [OC-SORT](https://github.com/noahcao/OC_SORT) and  [ByteTrack](https://github.com/ifzhang/ByteTrack). We thank their wondeful works. SOPERM-TRack, OC-SORT and ByteTrack are available under MIT License. And [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) uses Apache License 2.0 License.
 
 If you find this work useful, please consider to cite our paper:
 
