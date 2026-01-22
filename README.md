@@ -17,30 +17,6 @@ It is designed by enforcing three physical constraints to recover spatial consis
 <center>
 <img src="assets/Pipeline.png" width="800"/>
 </center>
-
-
-
-
-### Short-term Height Stability
-<center>
-<img src="assets/SHS.png" width="800"/>
-</center>
-
-
-### Ground Contact Distance 
-
-<center>
-<img src="assets/GCD.png" width="400"/>
-</center>
-
-
-### Global Perspective Map
-
-<center>
-<img src="assets/GPM.png" width="800"/>
-</center>
-
-
 ## News
 
 * [01/16/2026]: The code of SOPERM-Track is released.
