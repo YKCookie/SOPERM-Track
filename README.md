@@ -30,10 +30,6 @@ It is designed by enforcing three physical constraints to recover spatial consis
 | **MOT17 (test)**      | 63.7     | 64.4     | 78.8     | 78.6     | 16,600 | 102,000 | 1,683   | 68.1     |
 | **DanceTrack (test)** | 55.9     | 38.2     | 54.9     | 91.9     | -      | -       | -       | -        |
 
-![](assets/dancetrack0088_slow.gif)
-
-
-
 ## Get Started
 * See [INSTALL.md](./docs/INSTALL.md) for instructions of installing required components.
 
