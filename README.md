@@ -15,8 +15,9 @@ It is designed by enforcing three physical constraints to recover spatial consis
 ### Pipeline
 
 <center>
-<img src="assets/Pipeline.png" width="800"/>
+<img src="assets/Pipeline.pdf" width="800"/>
 </center>
+
 ## News
 
 * [01/16/2026]: The code of SOPERM-Track is released.
@@ -52,11 +53,16 @@ python3 tools/demo_track.py --demo_type video -f exps/example/mot/yolox_dancetra
 <center>
 <img src="assets/demo.gif" width="600"/>
 </center>
+<center>
+<img src="assets/dance_val_0058.gif" width="600"/>
+</center>
 
-
-
+<center>
+<img src="assets/dance_val_0010.gif" width="600"/>
+</center>
 
 ## Acknowledgement and Citation
+
 The codebase is built highly upon [OC-SORT](https://github.com/noahcao/OC_SORT) and  [ByteTrack](https://github.com/ifzhang/ByteTrack). We thank their wondeful works. SOPERM-TRack, OC-SORT and ByteTrack are available under MIT License. And [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) uses Apache License 2.0 License.
 
 If you find this work useful, please consider to cite our paper:
