@@ -15,8 +15,9 @@ It is designed by enforcing three physical constraints to recover spatial consis
 ### Pipeline
 
 <center>
-<img src="assets/Pipeline.pdf" width="800"/>
+<img src="assets/Pipeline.png" width="800"/>
 </center>
+
 
 ## News
 
