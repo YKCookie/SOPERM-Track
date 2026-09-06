@@ -23,7 +23,7 @@ It is designed by enforcing three physical constraints to recover spatial consis
 
 
 ## News
-
+* [07/15/2026]: The paper is accepted by TMM. https://ieeexplore.ieee.org/document/11677701/authors#authors
 * [01/16/2026]: The code of SOPERM-Track is released.
 
 ## Benchmark Performance
