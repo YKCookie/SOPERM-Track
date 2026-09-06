@@ -1,6 +1,6 @@
 # SOPERM-Track
 
-**Description**
+# Description
 Code for the paper "SOPERM-Track: Spatial Object Permanence Modeling via Height Stability and Ground Perspective". The paper is submitted to IEEE Transactions on MultiMedia(TMM).
 
 **SOPERM-Track** is a geometry-driven, **training-free** multi-object tracker based on the principle of **Spatial Object Permanence**. It aims to improve tracking robustness in **crowded scenes, non-linear motion**, and under **severe perspective distortion**.
