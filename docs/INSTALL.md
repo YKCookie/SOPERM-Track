@@ -1,11 +1,11 @@
 ## Installation
-SOPERM-Track is built upon codebase of [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) and [ByteTrack](https://github.com/ifzhang/ByteTrack). I tested the code with Python 3.8. 
+OC-SORT is built upon codebase of [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX) and [ByteTrack](https://github.com/ifzhang/ByteTrack). I tested the code with Python 3.8. 
 
 ### 1. Installing on the host machine
-Step1. Install SOPERM-Track
+Step1. Install OC-SORT
 ```shell
-git clone https://github.com/YKCookie/SOPERM_Track.git
-cd SOPERM-Track
+git clone https://github.com/noahcao/OC_SORT.git
+cd OC_SORT
 pip3 install -r requirements.txt
 python3 setup.py develop
 ```

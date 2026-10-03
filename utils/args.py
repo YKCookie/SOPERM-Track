@@ -56,6 +56,38 @@ def make_parser():
     parser.add_argument('--asso', default="iou", help="similarity function: iou/giou/diou/ciou/ctdis")
     parser.add_argument("--use_byte", dest="use_byte", default=False, action="store_true", help="use byte in tracking.")
     
+    
+    parser.add_argument("--TCM_first_step", default=False, action="store_true", help="use TCM in first step.")
+    parser.add_argument("--TCM_byte_step", default=False, action="store_true", help="use TCM in byte step.")
+    parser.add_argument("--TCM_first_step_weight", type=float, default=1.0, help="TCM first step weight")
+    parser.add_argument("--TCM_byte_step_weight", type=float, default=1.0, help="TCM second step weight")
+    parser.add_argument("--hybrid_sort_with_reid", default=False, action="store_true", help="use ReID model for Hybrid SORT.")
+
+    # for fast reid / EG
+    parser.add_argument("--EG_weight_high_score", default=0.0, type=float, help="weight of appearance cost matrix when using EG")
+    parser.add_argument("--EG_weight_low_score", default=0.0, type=float, help="weight of appearance cost matrix when using EG")
+    parser.add_argument("--low_thresh", default=0.1, type=float, help="threshold of low score detections for BYTE")
+    parser.add_argument("--high_score_matching_thresh", default=0.8, type=float, help="matching threshold for detections with high score")
+    parser.add_argument("--low_score_matching_thresh", default=0.5, type=float, help="matching threshold for detections with low score")
+    parser.add_argument("--alpha", default=0.8, type=float, help="momentum of embedding update")
+
+    parser.add_argument("--with_fastreid", dest="with_fastreid", default=False, action="store_true", help="use FastReID flag.")
+    parser.add_argument("--fast_reid_config", dest="fast_reid_config", default=r"fast_reid/configs/CUHKSYSU_DanceTrack/sbs_S50.yml", type=str, help="reid config file path")
+    parser.add_argument("--fast_reid_weights", dest="fast_reid_weights", default=r"fast_reid/logs/CUHKSYSU_DanceTrack/sbs_S50/model_final.pth", type=str, help="reid weight path")
+
+    parser.add_argument("--with_longterm_reid", dest="with_longterm_reid", default=False, action="store_true", help="use long-term reid features for association.")
+    parser.add_argument("--longterm_reid_weight", default=0.0, type=float, help="weight of appearance cost matrix when using long term reid features in 1st stage association")
+    parser.add_argument("--longterm_reid_weight_low", default=0.0, type=float, help="weight of appearance cost matrix when using long term reid features in 2nd stage association")
+    parser.add_argument("--with_longterm_reid_correction", dest="with_longterm_reid_correction", default=False, action="store_true", help="use long-term reid features for association correction.")
+    parser.add_argument("--longterm_reid_correction_thresh", default=1.0, type=float, help="threshold of correction when using long term reid features in 1st stage association")
+    parser.add_argument("--longterm_reid_correction_thresh_low", default=1.0, type=float, help="threshold of correction when using long term reid features in 2nd stage association")
+    parser.add_argument("--longterm_bank_length", type=int, default=30, help="max length of reid feat bank")
+    parser.add_argument("--adapfs", dest="adapfs", default=False, action="store_true", help="Adaptive Feature Smoothing.")
+
+    # ECC for CMC
+    parser.add_argument("--ECC", dest="ECC", default=False, action="store_true", help="use ECC for CMC.")
+    
+    
     # for kitti/bdd100k inference with public detections
     parser.add_argument('--raw_results_path', type=str, default="exps/permatrack_kitti_test/",
         help="path to the raw tracking results from other tracks")
@@ -85,3 +117,8 @@ def make_parser():
         help="device to run our model, can either be cpu or gpu",
     )
     return parser
+
+def args_merge_params_form_exp(args,exp):
+    for k, v in exp.__dict__.items():
+        if k in args.__dict__:
+            (args.__dict__)[k] = v

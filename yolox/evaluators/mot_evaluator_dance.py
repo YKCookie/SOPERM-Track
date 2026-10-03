@@ -18,6 +18,8 @@ from trackers.deepsort_tracker.deepsort import DeepSort
 from trackers.motdt_tracker.motdt_tracker import OnlineTracker
 
 from trackers.ocsort_sparse_tracker.sparse_ocsort import sparse_OCSort
+from trackers.hybrid_sort_tracker.hybrid_sort import Hybrid_Sort
+from trackers.hybrid_sort_tracker.sparse_ocsort_tcm_rocm import Soperm_Track_Hybird
 
 import contextlib
 import io
@@ -182,6 +184,8 @@ class MOTEvaluator:
         test_size=None,
         result_folder=None
     ):
+        
+    
         """
         COCO average precision (AP) Evaluation. Iterate inference on the test dataset
         and the results are evaluated by COCO API.
@@ -221,102 +225,266 @@ class MOTEvaluator:
         # tracker = OCSort(det_thresh = self.args.track_thresh, iou_threshold=self.args.iou_thresh,
         #     asso_func=self.args.asso, delta_t=self.args.deltat, inertia=self.args.inertia, use_byte=self.args.use_byte)
         
-  
+        tracker = Soperm_Track_Hybird(
+                # det_thresh=getattr(self.args, "track_thresh", 0.3),
+                # max_age=getattr(self.args, "max_age", 30),
+                # min_hits=getattr(self.args, "min_hits", 3),
+                # iou_threshold=getattr(self.args, "iou_thresh", 0.35),
+                # delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+                # asso_func=getattr(self.args, "asso", "iou"),
+                # inertia=getattr(self.args, "inertia", 0.2),
+                # use_byte=getattr(self.args, "use_byte", True),
+
+                # # 原三组件
+                # depth_enable=getattr(self.args, "use_depth", True),
+                # depth_alpha=getattr(self.args, "depth_alpha", 0.5),
+                # depth_beta=getattr(self.args, "depth_beta", 2.0),
+                # depth_gate=getattr(self.args, "depth_gate", 0.25),
+                # gate_floor=getattr(self.args, "gate_floor", 0.2),
+
+                # ua_enable=getattr(self.args, "ua_enable", True),
+                # ua_mode=getattr(self.args, "ua_mode", "cauchy"),
+                # ua_alpha=getattr(self.args, "ua_alpha", 1.2),
+                # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+                # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+                # ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.8),
+                # ua_low_score=getattr(self.args, "ua_low_score", 0.4),
+                # ua_score_boost=getattr(self.args, "ua_score_boost", 0.4),
+                # ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.05),
+                # ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.02),
+                # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+                # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+
+                # pc_enable=getattr(self.args, "pc_enable", True),
+                # pc_bins=getattr(self.args, "pc_bins", 24),
+                # pc_ema=getattr(self.args, "pc_ema", 0.08),
+                # pc_gamma=getattr(self.args, "pc_gamma", 0.8),
+                # pc_floor=getattr(self.args, "pc_floor", 0.7),
+                # pc_min_count=getattr(self.args, "pc_min_count", 3),
+                # pc_sample_score=getattr(self.args, "pc_sample_score", 0.6),
+
+                # ema_obs=getattr(self.args, "depth_ema_obs", 0.5),
+                # ema_pred=getattr(self.args, "depth_ema_pred", 0.1),
+                
+                # # #针对DanceTrack 调参
+                # det_thresh=getattr(self.args, "track_thresh", 0.25),
+                # max_age=getattr(self.args, "max_age", 40),
+                # min_hits=getattr(self.args, "min_hits", 3),
+                # iou_threshold=getattr(self.args, "iou_thresh", 0.30),
+                # delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+                # asso_func=getattr(self.args, "asso", "iou"),
+                # inertia=getattr(self.args, "inertia", 0.2),
+                # use_byte=getattr(self.args, "use_byte", True),
+
+                # # Soft-Depth
+                # depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
+                #             else getattr(self.args, "depth_alpha", 0.25)),
+                # depth_beta=getattr(self.args, "depth_beta", 1.6),
+                # depth_gate=getattr(self.args, "depth_gate", 0.3),
+                # gate_floor=getattr(self.args, "gate_floor", 0.35),
+
+                # # UA-HMIoU
+                # ua_enable=getattr(self.args, "ua_enable", True),
+                # ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
+                # ua_alpha=getattr(self.args, "ua_alpha", 1.8),
+                # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+                # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+                # ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.9),
+                # ua_low_score=getattr(self.args, "ua_low_score", 0.5),
+                # ua_score_boost=getattr(self.args, "ua_score_boost", 0.35),
+                # ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.08),
+                # ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.03),
+                # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+                # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+
+                # # PC-HMIoU
+                # pc_enable=getattr(self.args, "pc_enable", True),
+                # pc_bins=getattr(self.args, "pc_bins", 16),# 8,16,24,32，original: 16
+                # pc_ema=getattr(self.args, "pc_ema", 0.05),
+                # pc_gamma=getattr(self.args, "pc_gamma", 0.6),
+                # pc_floor=getattr(self.args, "pc_floor", 0.8),
+                # pc_min_count=getattr(self.args, "pc_min_count", 4),
+                # pc_sample_score=getattr(self.args, "pc_sample_score", 0.7),
+
+                # # Depth EMA
+                # ema_obs=getattr(self.args, "depth_ema_obs", 0.4),
+                # ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
+
+                # # 新增：方案1
+                # tcm_round1_enable=getattr(self.args, "tcm_round1_enable", True),
+                # tcm_round1_weight=getattr(self.args, "tcm_round1_weight", 0.3), #原权重0.03
+                # tcm_round1_margin=getattr(self.args, "tcm_round1_margin", 0.05),
+                
+                # tcm_round2_enable=getattr(self.args, "tcm_round2_enable", True),
+                # tcm_round2_weight=getattr(self.args, "tcm_round2_weight", 0.08),
+                # tcm_round3_enable=getattr(self.args, "tcm_round3_enable", True),
+                # tcm_round3_weight=getattr(self.args, "tcm_round3_weight", 0.10),
+
+                # # 先留着，默认关
+                # rocm_round3_enable=getattr(self.args, "rocm_round3_enable", False),
+                # rocm_weight=getattr(self.args, "rocm_weight", 0.08),
+
+                # # TCM score proxy
+                # score_ema=getattr(self.args, "score_ema", 0.7),
+                
+                
+                # Soperm-Hybird 针对 DanceTrack 调参（保守增强版）
+                det_thresh=getattr(self.args, "track_thresh", 0.3),
+                max_age=getattr(self.args, "max_age", 30),
+                min_hits=getattr(self.args, "min_hits", 3),
+                iou_threshold=getattr(self.args, "iou_thresh", 0.35),
+                delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+                asso_func=getattr(self.args, "asso", "iou"),
+                inertia=getattr(self.args, "inertia", 0.2),
+                use_byte=getattr(self.args, "use_byte", True),
+
+                # Soft-Depth：不要关，DanceTrack 上先弱化，不要清零
+                depth_alpha=(0.0 if not getattr(self.args, "use_depth", False)
+                            else getattr(self.args, "depth_alpha", 0.18)),
+                depth_beta=getattr(self.args, "depth_beta", 1.5),
+                depth_gate=getattr(self.args, "depth_gate", 0.32),
+                gate_floor=getattr(self.args, "gate_floor", 0.40),
+
+                # UA-HMIoU：只小幅收紧，不要大改
+                ua_enable=getattr(self.args, "ua_enable", False),
+                ua_mode=getattr(self.args, "ua_mode", "cauchy"),
+                ua_alpha=getattr(self.args, "ua_alpha", 1.7),
+                ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+                ua_border_boost=getattr(self.args, "ua_border_boost", 0.45),
+                ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.80),
+                ua_low_score=getattr(self.args, "ua_low_score", 0.50),
+                ua_score_boost=getattr(self.args, "ua_score_boost", 0.30),
+                ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.07),
+                ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.025),
+                ua_h_ema=getattr(self.args, "ua_h_ema", 0.50),
+                ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.30),
+
+                # PC-HMIoU：不要关，先轻一点
+                pc_enable=getattr(self.args, "pc_enable", False),
+                pc_bins=getattr(self.args, "pc_bins", 16),
+                pc_ema=getattr(self.args, "pc_ema", 0.05),
+                pc_gamma=getattr(self.args, "pc_gamma", 0.50),
+                pc_floor=getattr(self.args, "pc_floor", 0.85),
+                pc_min_count=getattr(self.args, "pc_min_count", 4),
+                pc_sample_score=getattr(self.args, "pc_sample_score", 0.72),
+
+                # Depth EMA
+                ema_obs=getattr(self.args, "depth_ema_obs", 0.40),
+                ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
+
+                # TCM：保留你已经验证有效的 round1，压低 round2，温和 round3
+                tcm_round1_enable=getattr(self.args, "tcm_round1_enable", True),
+                tcm_round1_weight=getattr(self.args, "tcm_round1_weight", 0.30),
+                tcm_round1_margin=getattr(self.args, "tcm_round1_margin", 0.05),
+
+                tcm_round2_enable=getattr(self.args, "tcm_round2_enable", True),
+                tcm_round2_weight=getattr(self.args, "tcm_round2_weight", 0.00),
+
+                tcm_round3_enable=getattr(self.args, "tcm_round3_enable", False),
+                tcm_round3_weight=getattr(self.args, "tcm_round3_weight", 0.12),
+
+                # ROCM：先别开
+                rocm_round3_enable=getattr(self.args, "rocm_round3_enable", False),
+                rocm_weight=getattr(self.args, "rocm_weight", 0.08),
+
+                # TCM score proxy
+                score_ema=getattr(self.args, "score_ema", 0.75),
+                
+            )  
         
         
-        ##修复PC-HMIoU
-        tracker = sparse_OCSort(
-            # det_thresh=getattr(self.args, "track_thresh", 0.3),
-            # max_age=getattr(self.args, "max_age", 30),
-            # min_hits=getattr(self.args, "min_hits", 3),
-            # iou_threshold=getattr(self.args, "iou_thresh", 0.35),
-            # delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
-            # asso_func=getattr(self.args, "asso", "iou"),
-            # inertia=getattr(self.args, "inertia", 0.2),
-            # use_byte=getattr(self.args, "use_byte", True),
+        # tracker = sparse_OCSort(
+        #     # det_thresh=getattr(self.args, "track_thresh", 0.3),
+        #     # max_age=getattr(self.args, "max_age", 30),
+        #     # min_hits=getattr(self.args, "min_hits", 3),
+        #     # iou_threshold=getattr(self.args, "iou_thresh", 0.35),
+        #     # delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+        #     # asso_func=getattr(self.args, "asso", "iou"),
+        #     # inertia=getattr(self.args, "inertia", 0.2),
+        #     # use_byte=getattr(self.args, "use_byte", True),
 
-            # # Soft-Depth
-            # depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
-            #             else getattr(self.args, "depth_alpha", 0.5)),
-            # depth_beta=getattr(self.args, "depth_beta", 2.0),
-            # depth_gate=getattr(self.args, "depth_gate", 0.25),
-            # gate_floor=getattr(self.args, "gate_floor", 0.2),
+        #     # # Soft-Depth
+        #     # depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
+        #     #             else getattr(self.args, "depth_alpha", 0.5)),
+        #     # depth_beta=getattr(self.args, "depth_beta", 2.0),
+        #     # depth_gate=getattr(self.args, "depth_gate", 0.25),
+        #     # gate_floor=getattr(self.args, "gate_floor", 0.2),
 
-            # # UA-HMIoU
-            # ua_enable=getattr(self.args, "ua_enable", True),
-            # ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
-            # ua_alpha=getattr(self.args, "ua_alpha", 1.2),
-            # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
-            # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
-            # ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.8),
-            # ua_low_score=getattr(self.args, "ua_low_score", 0.4),
-            # ua_score_boost=getattr(self.args, "ua_score_boost", 0.4),
-            # ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.05),
-            # ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.02),
-            # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
-            # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+        #     # # UA-HMIoU
+        #     # ua_enable=getattr(self.args, "ua_enable", True),
+        #     # ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
+        #     # ua_alpha=getattr(self.args, "ua_alpha", 1.2),
+        #     # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+        #     # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+        #     # ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.8),
+        #     # ua_low_score=getattr(self.args, "ua_low_score", 0.4),
+        #     # ua_score_boost=getattr(self.args, "ua_score_boost", 0.4),
+        #     # ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.05),
+        #     # ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.02),
+        #     # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+        #     # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
 
-            # # PC-HMIoU
-            # pc_enable=getattr(self.args, "pc_enable", True),
-            # pc_bins=getattr(self.args, "pc_bins", 24),
-            # pc_ema=getattr(self.args, "pc_ema", 0.08),
-            # pc_gamma=getattr(self.args, "pc_gamma", 0.8),
-            # pc_floor=getattr(self.args, "pc_floor", 0.7),
-            # pc_min_count=getattr(self.args, "pc_min_count", 3),
-            # pc_sample_score=getattr(self.args, "pc_sample_score", 0.6),
+        #     # # PC-HMIoU
+        #     # pc_enable=getattr(self.args, "pc_enable", True),
+        #     # pc_bins=getattr(self.args, "pc_bins", 24),
+        #     # pc_ema=getattr(self.args, "pc_ema", 0.08),
+        #     # pc_gamma=getattr(self.args, "pc_gamma", 0.8),
+        #     # pc_floor=getattr(self.args, "pc_floor", 0.7),
+        #     # pc_min_count=getattr(self.args, "pc_min_count", 3),
+        #     # pc_sample_score=getattr(self.args, "pc_sample_score", 0.6),
 
-            # # Depth EMA
-            # ema_obs=getattr(self.args, "depth_ema_obs", 0.5),
-            # ema_pred=getattr(self.args, "depth_ema_pred", 0.1),
+        #     # # Depth EMA
+        #     # ema_obs=getattr(self.args, "depth_ema_obs", 0.5),
+        #     # ema_pred=getattr(self.args, "depth_ema_pred", 0.1),
             
             
             
-            #针对DanceTrack 调参
-            det_thresh=getattr(self.args, "track_thresh", 0.25),
-            max_age=getattr(self.args, "max_age", 40),
-            min_hits=getattr(self.args, "min_hits", 3),
-            iou_threshold=getattr(self.args, "iou_thresh", 0.30),
-            delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
-            asso_func=getattr(self.args, "asso", "iou"),
-            inertia=getattr(self.args, "inertia", 0.2),
-            use_byte=getattr(self.args, "use_byte", True),
+        #     #针对DanceTrack 调参
+        #     det_thresh=getattr(self.args, "track_thresh", 0.25),
+        #     max_age=getattr(self.args, "max_age", 40),
+        #     min_hits=getattr(self.args, "min_hits", 3),
+        #     iou_threshold=getattr(self.args, "iou_thresh", 0.30),
+        #     delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+        #     asso_func=getattr(self.args, "asso", "iou"),
+        #     inertia=getattr(self.args, "inertia", 0.2),
+        #     use_byte=getattr(self.args, "use_byte", True),
 
-            # Soft-Depth
-            depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
-                        else getattr(self.args, "depth_alpha", 0.25)),
-            depth_beta=getattr(self.args, "depth_beta", 1.6),
-            depth_gate=getattr(self.args, "depth_gate", 0.3),
-            gate_floor=getattr(self.args, "gate_floor", 0.35),
+        #     # Soft-Depth
+        #     depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
+        #                 else getattr(self.args, "depth_alpha", 0.25)),
+        #     depth_beta=getattr(self.args, "depth_beta", 1.6),
+        #     depth_gate=getattr(self.args, "depth_gate", 0.3),
+        #     gate_floor=getattr(self.args, "gate_floor", 0.35),
 
-            # UA-HMIoU
-            ua_enable=getattr(self.args, "ua_enable", True),
-            ua_mode=getattr(self.args, "ua_mode", "gauss"),#cauchy or gauss
-            ua_alpha=getattr(self.args, "ua_alpha", 1.8),
-            ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
-            ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
-            ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.9),
-            ua_low_score=getattr(self.args, "ua_low_score", 0.5),
-            ua_score_boost=getattr(self.args, "ua_score_boost", 0.35),
-            ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.08),
-            ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.03),
-            ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
-            ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+        #     # UA-HMIoU
+        #     ua_enable=getattr(self.args, "ua_enable", True),
+        #     ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
+        #     ua_alpha=getattr(self.args, "ua_alpha", 1.8),
+        #     ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+        #     ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+        #     ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.9),
+        #     ua_low_score=getattr(self.args, "ua_low_score", 0.5),
+        #     ua_score_boost=getattr(self.args, "ua_score_boost", 0.35),
+        #     ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.08),
+        #     ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.03),
+        #     ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+        #     ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
 
-            # PC-HMIoU
-            pc_enable=getattr(self.args, "pc_enable", True),
-            pc_bins=getattr(self.args, "pc_bins", 16),# 8,16,24,32 ，original: 16
-            pc_ema=getattr(self.args, "pc_ema", 0.05),
-            pc_gamma=getattr(self.args, "pc_gamma", 0.6),
-            pc_floor=getattr(self.args, "pc_floor", 0.8),
-            pc_min_count=getattr(self.args, "pc_min_count", 4),
-            pc_sample_score=getattr(self.args, "pc_sample_score", 0.7),
+        #     # PC-HMIoU
+        #     pc_enable=getattr(self.args, "pc_enable", True),
+        #     pc_bins=getattr(self.args, "pc_bins", 16),# 8,16,24,32 ，original: 16
+        #     pc_ema=getattr(self.args, "pc_ema", 0.05),
+        #     pc_gamma=getattr(self.args, "pc_gamma", 0.6),
+        #     pc_floor=getattr(self.args, "pc_floor", 0.8),
+        #     pc_min_count=getattr(self.args, "pc_min_count", 4),
+        #     pc_sample_score=getattr(self.args, "pc_sample_score", 0.7),
 
-            # Depth EMA
-            ema_obs=getattr(self.args, "depth_ema_obs", 0.4),
-            ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
+        #     # Depth EMA
+        #     ema_obs=getattr(self.args, "depth_ema_obs", 0.4),
+        #     ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
 
             
-        ) 
+        # ) 
         
 
         
@@ -344,12 +512,9 @@ class MOTEvaluator:
                     # tracker = OCSort(det_thresh = self.args.track_thresh, iou_threshold=self.args.iou_thresh,
                     #         asso_func=self.args.asso, delta_t=self.args.deltat, inertia=self.args.inertia, use_byte=self.args.use_byte)
                     
-                    
-  
-                
 
-                        ###修复PC-HMIoU
-                    tracker = sparse_OCSort(
+                    
+                    tracker = Soperm_Track_Hybird(
                         # det_thresh=getattr(self.args, "track_thresh", 0.3),
                         # max_age=getattr(self.args, "max_age", 30),
                         # min_hits=getattr(self.args, "min_hits", 3),
@@ -359,16 +524,15 @@ class MOTEvaluator:
                         # inertia=getattr(self.args, "inertia", 0.2),
                         # use_byte=getattr(self.args, "use_byte", True),
 
-                        # # Soft-Depth
-                        # depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
-                        #             else getattr(self.args, "depth_alpha", 0.5)),
+                        # # 原三组件
+                        # depth_enable=getattr(self.args, "use_depth", True),
+                        # depth_alpha=getattr(self.args, "depth_alpha", 0.5),
                         # depth_beta=getattr(self.args, "depth_beta", 2.0),
                         # depth_gate=getattr(self.args, "depth_gate", 0.25),
                         # gate_floor=getattr(self.args, "gate_floor", 0.2),
 
-                        # # UA-HMIoU
                         # ua_enable=getattr(self.args, "ua_enable", True),
-                        # ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
+                        # ua_mode=getattr(self.args, "ua_mode", "cauchy"),
                         # ua_alpha=getattr(self.args, "ua_alpha", 1.2),
                         # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
                         # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
@@ -380,7 +544,6 @@ class MOTEvaluator:
                         # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
                         # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
 
-                        # # PC-HMIoU
                         # pc_enable=getattr(self.args, "pc_enable", True),
                         # pc_bins=getattr(self.args, "pc_bins", 24),
                         # pc_ema=getattr(self.args, "pc_ema", 0.08),
@@ -389,55 +552,225 @@ class MOTEvaluator:
                         # pc_min_count=getattr(self.args, "pc_min_count", 3),
                         # pc_sample_score=getattr(self.args, "pc_sample_score", 0.6),
 
-                        # # Depth EMA
                         # ema_obs=getattr(self.args, "depth_ema_obs", 0.5),
                         # ema_pred=getattr(self.args, "depth_ema_pred", 0.1),
                         
+                        # #     #针对DanceTrack 调参
+                        # det_thresh=getattr(self.args, "track_thresh", 0.25),
+                        # max_age=getattr(self.args, "max_age", 40),
+                        # min_hits=getattr(self.args, "min_hits", 3),
+                        # iou_threshold=getattr(self.args, "iou_thresh", 0.30),
+                        # delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+                        # asso_func=getattr(self.args, "asso", "iou"),
+                        # inertia=getattr(self.args, "inertia", 0.2),
+                        # use_byte=getattr(self.args, "use_byte", True),
 
-                        #针对DanceTrack 调参
-                        det_thresh=getattr(self.args, "track_thresh", 0.25),
-                        max_age=getattr(self.args, "max_age", 40),
+                        # # Soft-Depth
+                        # depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
+                        #             else getattr(self.args, "depth_alpha", 0.25)),
+                        # depth_beta=getattr(self.args, "depth_beta", 1.6),
+                        # depth_gate=getattr(self.args, "depth_gate", 0.3),
+                        # gate_floor=getattr(self.args, "gate_floor", 0.35),
+
+                        # # UA-HMIoU
+                        # ua_enable=getattr(self.args, "ua_enable", True),
+                        # ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
+                        # ua_alpha=getattr(self.args, "ua_alpha", 1.8),
+                        # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+                        # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+                        # ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.9),
+                        # ua_low_score=getattr(self.args, "ua_low_score", 0.5),
+                        # ua_score_boost=getattr(self.args, "ua_score_boost", 0.35),
+                        # ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.08),
+                        # ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.03),
+                        # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+                        # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+
+                        # # PC-HMIoU
+                        # pc_enable=getattr(self.args, "pc_enable", True),
+                        # pc_bins=getattr(self.args, "pc_bins", 16),# 8,16,24,32，original: 16
+                        # pc_ema=getattr(self.args, "pc_ema", 0.05),
+                        # pc_gamma=getattr(self.args, "pc_gamma", 0.6),
+                        # pc_floor=getattr(self.args, "pc_floor", 0.8),
+                        # pc_min_count=getattr(self.args, "pc_min_count", 4),
+                        # pc_sample_score=getattr(self.args, "pc_sample_score", 0.7),
+
+                        # # Depth EMA
+                        # ema_obs=getattr(self.args, "depth_ema_obs", 0.4),
+                        # ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
+
+                        # # 新增：方案1
+                        # tcm_round1_enable=getattr(self.args, "tcm_round1_enable", True),
+                        # tcm_round1_weight=getattr(self.args, "tcm_round1_weight", 0.3), #原权重0.03
+                        # tcm_round1_margin=getattr(self.args, "tcm_round1_margin", 0.05),
+                        
+                        # tcm_round2_enable=getattr(self.args, "tcm_round2_enable", True),
+                        # tcm_round2_weight=getattr(self.args, "tcm_round2_weight", 0.08),
+                        # tcm_round3_enable=getattr(self.args, "tcm_round3_enable", True),
+                        # tcm_round3_weight=getattr(self.args, "tcm_round3_weight", 0.10),
+
+                        # # 先留着，默认关
+                        # rocm_round3_enable=getattr(self.args, "rocm_round3_enable", False),
+                        # rocm_weight=getattr(self.args, "rocm_weight", 0.08),
+
+                        # # TCM score proxy
+                        # score_ema=getattr(self.args, "score_ema", 0.7),
+                        
+                        # Soperm-Hybird 针对 DanceTrack 调参（保守增强版）
+                        det_thresh=getattr(self.args, "track_thresh", 0.3),
+                        max_age=getattr(self.args, "max_age", 30),
                         min_hits=getattr(self.args, "min_hits", 3),
-                        iou_threshold=getattr(self.args, "iou_thresh", 0.30),
+                        iou_threshold=getattr(self.args, "iou_thresh", 0.35),
                         delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
                         asso_func=getattr(self.args, "asso", "iou"),
                         inertia=getattr(self.args, "inertia", 0.2),
                         use_byte=getattr(self.args, "use_byte", True),
 
-                        # Soft-Depth
-                        depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
-                                    else getattr(self.args, "depth_alpha", 0.25)),
-                        depth_beta=getattr(self.args, "depth_beta", 1.6),
-                        depth_gate=getattr(self.args, "depth_gate", 0.3),
-                        gate_floor=getattr(self.args, "gate_floor", 0.35),
+                        # Soft-Depth：不要关，DanceTrack 上先弱化，不要清零
+                        depth_alpha=(0.0 if not getattr(self.args, "use_depth", False)
+                                    else getattr(self.args, "depth_alpha", 0.18)),
+                        depth_beta=getattr(self.args, "depth_beta", 1.5),
+                        depth_gate=getattr(self.args, "depth_gate", 0.32),
+                        gate_floor=getattr(self.args, "gate_floor", 0.40),
 
-                        # UA-HMIoU
-                        ua_enable=getattr(self.args, "ua_enable", True),
-                        ua_mode=getattr(self.args, "ua_mode", "gauss"),#cauchy or gauss
-                        ua_alpha=getattr(self.args, "ua_alpha", 1.8),
+                        # UA-HMIoU：只小幅收紧，不要大改
+                        ua_enable=getattr(self.args, "ua_enable", False),
+                        ua_mode=getattr(self.args, "ua_mode", "cauchy"),
+                        ua_alpha=getattr(self.args, "ua_alpha", 1.7),
                         ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
-                        ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
-                        ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.9),
-                        ua_low_score=getattr(self.args, "ua_low_score", 0.5),
-                        ua_score_boost=getattr(self.args, "ua_score_boost", 0.35),
-                        ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.08),
-                        ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.03),
-                        ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
-                        ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+                        ua_border_boost=getattr(self.args, "ua_border_boost", 0.45),
+                        ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.80),
+                        ua_low_score=getattr(self.args, "ua_low_score", 0.50),
+                        ua_score_boost=getattr(self.args, "ua_score_boost", 0.30),
+                        ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.07),
+                        ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.025),
+                        ua_h_ema=getattr(self.args, "ua_h_ema", 0.50),
+                        ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.30),
 
-                        # PC-HMIoU
-                        pc_enable=getattr(self.args, "pc_enable", True),
-                        pc_bins=getattr(self.args, "pc_bins", 16),# 8,16,24,32，original: 16
+                        # PC-HMIoU：不要关，先轻一点
+                        pc_enable=getattr(self.args, "pc_enable", False),
+                        pc_bins=getattr(self.args, "pc_bins", 16),
                         pc_ema=getattr(self.args, "pc_ema", 0.05),
-                        pc_gamma=getattr(self.args, "pc_gamma", 0.6),
-                        pc_floor=getattr(self.args, "pc_floor", 0.8),
+                        pc_gamma=getattr(self.args, "pc_gamma", 0.50),
+                        pc_floor=getattr(self.args, "pc_floor", 0.85),
                         pc_min_count=getattr(self.args, "pc_min_count", 4),
-                        pc_sample_score=getattr(self.args, "pc_sample_score", 0.7),
+                        pc_sample_score=getattr(self.args, "pc_sample_score", 0.72),
 
                         # Depth EMA
-                        ema_obs=getattr(self.args, "depth_ema_obs", 0.4),
+                        ema_obs=getattr(self.args, "depth_ema_obs", 0.40),
                         ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
-                    ) 
+
+                        # TCM：保留你已经验证有效的 round1，压低 round2，温和 round3
+                        tcm_round1_enable=getattr(self.args, "tcm_round1_enable", True),
+                        tcm_round1_weight=getattr(self.args, "tcm_round1_weight", 0.30),
+                        tcm_round1_margin=getattr(self.args, "tcm_round1_margin", 0.05),
+
+                        tcm_round2_enable=getattr(self.args, "tcm_round2_enable", True),
+                        tcm_round2_weight=getattr(self.args, "tcm_round2_weight", 0.00),
+
+                        tcm_round3_enable=getattr(self.args, "tcm_round3_enable", False),
+                        tcm_round3_weight=getattr(self.args, "tcm_round3_weight", 0.12),
+
+                        # ROCM：先别开
+                        rocm_round3_enable=getattr(self.args, "rocm_round3_enable", False),
+                        rocm_weight=getattr(self.args, "rocm_weight", 0.08),
+
+                        # TCM score proxy
+                        score_ema=getattr(self.args, "score_ema", 0.75),
+                        
+                    )  
+                
+
+
+                    # tracker = sparse_OCSort(
+                    #     # det_thresh=getattr(self.args, "track_thresh", 0.3),
+                    #     # max_age=getattr(self.args, "max_age", 30),
+                    #     # min_hits=getattr(self.args, "min_hits", 3),
+                    #     # iou_threshold=getattr(self.args, "iou_thresh", 0.35),
+                    #     # delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+                    #     # asso_func=getattr(self.args, "asso", "iou"),
+                    #     # inertia=getattr(self.args, "inertia", 0.2),
+                    #     # use_byte=getattr(self.args, "use_byte", True),
+
+                    #     # # Soft-Depth
+                    #     # depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
+                    #     #             else getattr(self.args, "depth_alpha", 0.5)),
+                    #     # depth_beta=getattr(self.args, "depth_beta", 2.0),
+                    #     # depth_gate=getattr(self.args, "depth_gate", 0.25),
+                    #     # gate_floor=getattr(self.args, "gate_floor", 0.2),
+
+                    #     # # UA-HMIoU
+                    #     # ua_enable=getattr(self.args, "ua_enable", True),
+                    #     # ua_mode=getattr(self.args, "ua_mode", "cauchy"),#cauchy or gauss
+                    #     # ua_alpha=getattr(self.args, "ua_alpha", 1.2),
+                    #     # ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+                    #     # ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+                    #     # ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.8),
+                    #     # ua_low_score=getattr(self.args, "ua_low_score", 0.4),
+                    #     # ua_score_boost=getattr(self.args, "ua_score_boost", 0.4),
+                    #     # ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.05),
+                    #     # ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.02),
+                    #     # ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+                    #     # ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+
+                    #     # # PC-HMIoU
+                    #     # pc_enable=getattr(self.args, "pc_enable", True),
+                    #     # pc_bins=getattr(self.args, "pc_bins", 24),
+                    #     # pc_ema=getattr(self.args, "pc_ema", 0.08),
+                    #     # pc_gamma=getattr(self.args, "pc_gamma", 0.8),
+                    #     # pc_floor=getattr(self.args, "pc_floor", 0.7),
+                    #     # pc_min_count=getattr(self.args, "pc_min_count", 3),
+                    #     # pc_sample_score=getattr(self.args, "pc_sample_score", 0.6),
+
+                    #     # # Depth EMA
+                    #     # ema_obs=getattr(self.args, "depth_ema_obs", 0.5),
+                    #     # ema_pred=getattr(self.args, "depth_ema_pred", 0.1),
+                        
+
+                    #     #针对DanceTrack 调参
+                    #     det_thresh=getattr(self.args, "track_thresh", 0.25),
+                    #     max_age=getattr(self.args, "max_age", 40),
+                    #     min_hits=getattr(self.args, "min_hits", 3),
+                    #     iou_threshold=getattr(self.args, "iou_thresh", 0.30),
+                    #     delta_t=getattr(self.args, "deltat", getattr(self.args, "delta_t", 3)),
+                    #     asso_func=getattr(self.args, "asso", "iou"),
+                    #     inertia=getattr(self.args, "inertia", 0.2),
+                    #     use_byte=getattr(self.args, "use_byte", True),
+
+                    #     # Soft-Depth
+                    #     depth_alpha=(0.0 if not getattr(self.args, "use_depth", True)
+                    #                 else getattr(self.args, "depth_alpha", 0.25)),
+                    #     depth_beta=getattr(self.args, "depth_beta", 1.6),
+                    #     depth_gate=getattr(self.args, "depth_gate", 0.3),
+                    #     gate_floor=getattr(self.args, "gate_floor", 0.35),
+
+                    #     # UA-HMIoU
+                    #     ua_enable=getattr(self.args, "ua_enable", True),
+                    #     ua_mode=getattr(self.args, "ua_mode", "gauss"),#cauchy or gauss
+                    #     ua_alpha=getattr(self.args, "ua_alpha", 1.8),
+                    #     ua_border_margin_frac=getattr(self.args, "ua_border_margin_frac", 0.02),
+                    #     ua_border_boost=getattr(self.args, "ua_border_boost", 0.5),
+                    #     ua_miss_boost=getattr(self.args, "ua_miss_boost", 0.9),
+                    #     ua_low_score=getattr(self.args, "ua_low_score", 0.5),
+                    #     ua_score_boost=getattr(self.args, "ua_score_boost", 0.35),
+                    #     ua_sigma_floor_frac=getattr(self.args, "ua_sigma_floor_frac", 0.08),
+                    #     ua_proc_var_frac=getattr(self.args, "ua_proc_var_frac", 0.03),
+                    #     ua_h_ema=getattr(self.args, "ua_h_ema", 0.5),
+                    #     ua_h2_ema=getattr(self.args, "ua_h2_ema", 0.3),
+
+                    #     # PC-HMIoU
+                    #     pc_enable=getattr(self.args, "pc_enable", True),
+                    #     pc_bins=getattr(self.args, "pc_bins", 16),# 8,16,24,32，original: 16
+                    #     pc_ema=getattr(self.args, "pc_ema", 0.05),
+                    #     pc_gamma=getattr(self.args, "pc_gamma", 0.6),
+                    #     pc_floor=getattr(self.args, "pc_floor", 0.8),
+                    #     pc_min_count=getattr(self.args, "pc_min_count", 4),
+                    #     pc_sample_score=getattr(self.args, "pc_sample_score", 0.7),
+
+                    #     # Depth EMA
+                    #     ema_obs=getattr(self.args, "depth_ema_obs", 0.4),
+                    #     ema_pred=getattr(self.args, "depth_ema_pred", 0.05),
+                    # ) 
                    
                     
                     if len(results) != 0:

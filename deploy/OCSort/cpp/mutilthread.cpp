@@ -56,24 +56,24 @@ void processFrame(const cv::Mat& frame, std::vector<Detection>& output, ocsort::
 
         data.push_back(row);
 
-        cv::rectangle(frame, box, cv::Scalar(0, 255, 0), 2);
+        if (!data.empty()) {
+            std::vector<Eigen::RowVectorXf> res = tracker.update(Vector2Matrix(data));
 
-        std::string classString = detection.className + '(' + std::to_string(detection.confidence).substr(0, 4) + ')';
-        cv::putText(frame, classString, cv::Point(box.x + 5, box.y + box.height - 10), cv::FONT_HERSHEY_DUPLEX, 0.5, cv::Scalar(0, 255, 0), 1, 0);
-    }
+            cv::rectangle(frame, box, cv::Scalar(0, 255, 0), 2);
 
-    if (!data.empty()) {
-        std::vector<Eigen::RowVectorXf> res = tracker.update(Vector2Matrix(data));
+            std::string classString = detection.className + '(' + std::to_string(detection.confidence).substr(0, 4) + ')';
+            cv::putText(frame, classString, cv::Point(box.x + 5, box.y + box.height - 10), cv::FONT_HERSHEY_DUPLEX, 0.5, cv::Scalar(0, 255, 0), 1, 0);
 
-        for (auto j : res) {
-            int ID = int(j[4]);
-            int Class = int(j[5]);
-            float conf = j[6];
-            cv::putText(frame, cv::format("ID:%d", ID), cv::Point(j[0], j[1] - 5), 0, 0.5, cv::Scalar(0, 0, 255), 1, cv::LINE_AA);
-            cv::rectangle(frame, cv::Rect(j[0], j[1], j[2] - j[0] + 1, j[3] - j[1] + 1), cv::Scalar(0, 0, 255), 1);
+            for (auto j : res) {
+                int ID = int(j[4]);
+                int Class = int(j[5]);
+                float conf = j[6];
+                cv::putText(frame, cv::format("ID:%d", ID), cv::Point(j[0], j[1] - 5), 0, 0.5, cv::Scalar(0, 0, 255), 1, cv::LINE_AA);
+                cv::rectangle(frame, cv::Rect(j[0], j[1], j[2] - j[0] + 1, j[3] - j[1] + 1), cv::Scalar(0, 0, 255), 1);
+            }
+
+            data.clear();
         }
-
-        data.clear();
     }
 }
 

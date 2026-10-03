@@ -40,7 +40,7 @@ class Exp(MyExp):
         )
 
         dataset = MOTDataset(
-            data_dir=os.path.join(get_yolox_datadir(), "mix_det"),
+            data_dir=os.path.join(get_yolox_datadir(), "mot"),
             json_file=self.train_ann,
             name='',
             img_size=self.input_size,
@@ -95,7 +95,7 @@ class Exp(MyExp):
         from yolox.data import MOTDataset, ValTransform
 
         valdataset = MOTDataset(
-            data_dir=os.path.join(get_yolox_datadir(), "mot"),
+            data_dir=os.path.join(get_yolox_datadir(), "mot"),#mix_det改为mot
             json_file=self.val_ann,
             img_size=self.test_size,
             name='test',   # change to train when running on training set
